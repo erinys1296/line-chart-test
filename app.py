@@ -15,7 +15,6 @@ handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 
 @app.route("/callback", methods=['POST'])
 def callback():
-    PLAYING = False
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
@@ -27,6 +26,10 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    try:
+        print(PLAYING)
+    except:
+        PLAYING = False
     
     if event.message.text == '開始' and PLAYING == False:
         answer = random.randint(1,100)
