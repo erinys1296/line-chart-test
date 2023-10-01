@@ -26,6 +26,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    print(event.message.text)
     if event.message.text == '開始':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
