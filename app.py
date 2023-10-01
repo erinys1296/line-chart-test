@@ -27,15 +27,16 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     try:
-        print(PLAYING)
+        temp = PLAYING 
     except:
         PLAYING = False
     
     if event.message.text == '開始' and PLAYING == False:
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
-        line_bot_api.reply_message(event.reply_token, message)
+        
         PLAYING = True
+        line_bot_api.reply_message(event.reply_token, message+str(PLAYING))
     elif PLAYING == True:
         try:
             guass = int(event.message.text)
@@ -51,7 +52,7 @@ def handle_message(event):
         
     else:
         message = TextSendMessage(text=event.message.text)
-        line_bot_api.reply_message(event.reply_token, message)
+        line_bot_api.reply_message(event.reply_token, message+str(PLAYING))
 
 import os
 if __name__ == "__main__":
