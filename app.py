@@ -46,7 +46,7 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, '請輸入數字')
         
     else:
-        UserName = event.source.display_name
+        UserName = event.source.user_id
         username = line_bot_api.get_profile(UserName)
         message = TextSendMessage(text=username + ' ' + event.message.text)
         line_bot_api.reply_message(event.reply_token, message)
