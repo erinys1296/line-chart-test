@@ -33,10 +33,10 @@ def handle_message(event):
     
     if event.message.text == '開始' and PLAYING == False:
         answer = random.randint(1,100)
-        message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
+        message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer) +str(PLAYING))
         
         PLAYING = True
-        line_bot_api.reply_message(event.reply_token, message+str(PLAYING))
+        line_bot_api.reply_message(event.reply_token, message)
     elif PLAYING == True:
         try:
             guass = int(event.message.text)
@@ -51,8 +51,8 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, '請輸入數字')
         
     else:
-        message = TextSendMessage(text=event.message.text)
-        line_bot_api.reply_message(event.reply_token, message+str(PLAYING))
+        message = TextSendMessage(text=event.message.text+str(PLAYING))
+        line_bot_api.reply_message(event.reply_token, message)
 
 import os
 if __name__ == "__main__":
