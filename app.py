@@ -48,7 +48,7 @@ def handle_message(event):
     else:
         UserName = event.source.user_id
         username = line_bot_api.get_profile(UserName)
-        message = TextSendMessage(text=username + ' ' + event.message.text)
+        message = TextSendMessage(text=event.message.text)
         line_bot_api.reply_message(event.reply_token, message)
 
 import os
