@@ -35,6 +35,7 @@ def handle_message(event):
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
         line_bot_api.reply_message(event.reply_token, message)
+        PLAYING = True
     elif PLAYING == True:
         try:
             guass = int(event.message.text)
