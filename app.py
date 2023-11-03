@@ -33,6 +33,13 @@ def handle_message(event):
     if event.message.text == '開始':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
+        counter = 0
+        while True:
+            counter +=1 
+            message = TextSendMessage(text= str(counter))
+            line_bot_api.reply_message(event.reply_token, message)
+            if counter > 5:
+                break
 
         line_bot_api.reply_message(event.reply_token, message)
     elif event.message.text[:6].lower() == 'hi ai:':
@@ -52,8 +59,8 @@ def handle_message(event):
         
     else:
         UserName = event.source.user_id
-        #username = line_bot_api.get_profile(UserName)
-        message = TextSendMessage(text= event.message.text)
+        username = line_bot_api.get_profile(UserName)
+        message = TextSendMessage(text= username.display_name)
         line_bot_api.reply_message(event.reply_token, message)
 
 import os
