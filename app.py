@@ -37,7 +37,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, message)
     elif event.message.text[:6].lower() == 'hi ai:':
         reply_msg = ''
-        openai.api_key = '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'
+        openai.api_key = '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'
 
         # 將第六個字元之後的訊息發送給 OpenAI
         response = openai.Completion.create(
