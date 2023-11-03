@@ -24,5 +24,4 @@ def linebot():
     return 'OK'
 
 if __name__ == "__main__":
-    run_with_ngrok(app)   # colab 使用，本機環境請刪除
     app.run()
