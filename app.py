@@ -42,7 +42,7 @@ def handle_message(event):
         # 將第六個字元之後的訊息發送給 OpenAI
         response = openai.Completion.create(
             model='text-davinci-003',
-            prompt=msg[6:],
+            prompt=event.message.text[6:],
             max_tokens=256,
             temperature=0.5,
             )
