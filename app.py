@@ -1,28 +1,59 @@
-from flask import Flask, request
+from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
-from linebot.models import TextSendMessage   # 載入 TextSendMessage 模組
-import json
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import *
+import random
+import os
 
 app = Flask(__name__)
 
-@app.route("/", methods=['POST'])
-def linebot():
+
+line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
+handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
+
+
+@app.route("/callback", methods=['POST'])
+def callback():
+    signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
-    json_data = json.loads(body)
-    print(json_data)
+    app.logger.info("Request body: " + body)
     try:
-        line_bot_api = LineBotApi('Hov5TnfbE/8e6kbS2XKYxngqlD5EjNLi8G6+RBM980y8hRed183iRdMXnJB8w6CDarw358rcHM4UQNTBPI8WLsivSZfQ1g2xkakLCk9DU1fL10rN8JJuBoX1CmhuQpukv4LewLrxMoV3ly2eXJsSPQdB04t89/1O/w1cDnyilFU=')
-        handler = WebhookHandler('e5319c4054ab67f56fa2625b4f82e4ab')
-        signature = request.headers['X-Line-Signature']
         handler.handle(body, signature)
-        tk = json_data['events'][0]['replyToken']         # 取得 reply token
-        msg = json_data['events'][0]['message']['text']   # 取得使用者發送的訊息
-        text_message = TextSendMessage(text=msg)          # 設定回傳同樣的訊息
-        line_bot_api.reply_message(tk,text_message)       # 回傳訊息
-    except:
-        print('error')
+    except InvalidSignatureError:
+        abort(400)
     return 'OK'
 
-if __name__ == "__main__":
-    app.run()
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+
     
+
+    
+    if event.message.text == '開始':
+        answer = random.randint(1,100)
+        message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
+
+        line_bot_api.reply_message(event.reply_token, message)
+    elif False:
+        try:
+            guass = int(event.message.text)
+            if guass == answer:
+                UserName = event.source.display_name
+                username = line_bot_api.get_profile(UserName)
+                line_bot_api.reply_message(event.reply_token, '恭喜' + username + '猜對啦!')
+                PLAYING = False
+            else:
+                line_bot_api.reply_message(event.reply_token, '猜錯囉!請繼續!')
+        except:
+            line_bot_api.reply_message(event.reply_token, '請輸入數字')
+        
+    else:
+        UserName = event.source.user_id
+        #username = line_bot_api.get_profile(UserName)
+        message = TextSendMessage(text= event.message.text)
+        line_bot_api.reply_message(event.reply_token, message)
+
+import os
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
