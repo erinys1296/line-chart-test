@@ -4,6 +4,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
 import random
 import os
+import
 
 app = Flask(__name__)
 
@@ -34,18 +35,20 @@ def handle_message(event):
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
 
         line_bot_api.reply_message(event.reply_token, message)
-    elif False:
-        try:
-            guass = int(event.message.text)
-            if guass == answer:
-                UserName = event.source.display_name
-                username = line_bot_api.get_profile(UserName)
-                line_bot_api.reply_message(event.reply_token, '恭喜' + username + '猜對啦!')
-                PLAYING = False
-            else:
-                line_bot_api.reply_message(event.reply_token, '猜錯囉!請繼續!')
-        except:
-            line_bot_api.reply_message(event.reply_token, '請輸入數字')
+    elif event.message.text[:6].lower() == 'hi ai:':
+        reply_msg = ''
+        openai.api_key = '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'
+
+        # 將第六個字元之後的訊息發送給 OpenAI
+        response = openai.Completion.create(
+            model='text-davinci-003',
+            prompt=msg[6:],
+            max_tokens=256,
+            temperature=0.5,
+            )
+        # 接收到回覆訊息後，移除換行符號
+        reply_msg = response["choices"][0]["text"].replace('\n','')
+        line_bot_api.reply_message(event.reply_token, reply_msg)
         
     else:
         UserName = event.source.user_id
