@@ -41,7 +41,7 @@ def handle_message(event):
         test = fdb.get('/'+dataid,'start')
     except:
         fdb.put('/'+dataid,'start',0)
-    if event.message.text == '開始':
+    if event.message.text == '開始猜數字':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " )
         line_bot_api.reply_message(event.reply_token, message)
@@ -54,20 +54,31 @@ def handle_message(event):
     elif fdb.get('/'+dataid,'start') == 1:
         min = fdb.get('/'+dataid,'min')
         max = fdb.get('/'+dataid,'max')
-        if int(event.message.text) == fdb.get('/'+dataid,'answer'):
-            
-            message = TextSendMessage(text= username.display_name + " 答對了！好厲害！")
+        if event.message.text == "結束":
+            message = TextSendMessage(text= "遊戲已終止，想再玩一次請輸入「開始猜數字」" )
             line_bot_api.reply_message(event.reply_token, message)
             fdb.put('/'+dataid,'start',0)
-        elif int(event.message.text) > fdb.get('/'+dataid,'answer'):
-            fdb.put('/'+dataid,'max',int(event.message.text) )
-            max = int(event.message.text) 
-            message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
-            line_bot_api.reply_message(event.reply_token, message)
-        else:
-            fdb.put('/'+dataid,'min',int(event.message.text) )
-            min = int(event.message.text) 
-            message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
+        try:
+            if int(event.message.text) == fdb.get('/'+dataid,'answer'):
+                message = TextSendMessage(text= username.display_name + " 答對了！好厲害！")
+                line_bot_api.reply_message(event.reply_token, message)
+                fdb.put('/'+dataid,'start',0)
+            elif not min < int(event.message.text) < max:
+                message = TextSendMessage(text= "請從{}到{}中猜喔！".format(min,max) )
+                line_bot_api.reply_message(event.reply_token, message)
+                
+            elif int(event.message.text) > fdb.get('/'+dataid,'answer'):
+                fdb.put('/'+dataid,'max',int(event.message.text) )
+                max = int(event.message.text) 
+                message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
+                line_bot_api.reply_message(event.reply_token, message)
+            else:
+                fdb.put('/'+dataid,'min',int(event.message.text) )
+                min = int(event.message.text) 
+                message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
+                line_bot_api.reply_message(event.reply_token, message)
+        except:
+            message = TextSendMessage(text= "還在猜數字中喔！請猜中或輸入「結束」來跳出" )
             line_bot_api.reply_message(event.reply_token, message)
         
     else:
