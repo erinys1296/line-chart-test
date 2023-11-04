@@ -36,16 +36,17 @@ def handle_message(event):
     if event.message.text == '開始':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
+        line_bot_api.reply_message(event.reply_token, message)
         counter = 0
-        fdb.put('/'+username.user_id,'start',0)
-        fdb.put('/'+username.user_id,'guess',answer)
+        fdb.put('/'+username.user_id,'start',1)
+        fdb.put('/'+username.user_id,'answer',answer)
         
     elif fdb.get('/'+username.user_id,'start') == 1:
-        if int(event.message.text) == answer:
+        if int(event.message.text) == fdb.get('/'+username.user_id,'answer'):
             message = TextSendMessage(text= "答對了！好厲害！")
             line_bot_api.reply_message(event.reply_token, message)
             fdb.put('/'+username.user_id,'start',0)
-        elif int(event.message.text) > answer:
+        elif int(event.message.text) > afdb.get('/'+username.user_id,'answer'):
             message = TextSendMessage(text= "太小了喔，再猜一次")
             line_bot_api.reply_message(event.reply_token, message)
         else:
