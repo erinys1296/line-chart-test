@@ -31,38 +31,41 @@ def callback():
 def handle_message(event):
 
     UserName = event.source.user_id
-    #GroupID = line_bot_api.get_group_summary(event.source.group_id)
     username = line_bot_api.get_profile(UserName)
+    if event.source.type == 'group':
+        dataid = event.source.group_id
+    else:
+        
+        dataid = username.user_id
     try: 
-        test = fdb.get('/'+username.user_id,'start')
+        test = fdb.get('/'+dataid,'start')
     except:
-        fdb.put('/'+username.user_id,'start',0)
-        #fdb.put('/'+GroupID,'start',0)
+        fdb.put('/'+dataid,'start',0)
     if event.message.text == '開始':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
         line_bot_api.reply_message(event.reply_token, message)
         counter = 0
-        fdb.put('/'+username.user_id,'start',1)
-        fdb.put('/'+username.user_id,'min',1)
-        fdb.put('/'+username.user_id,'max',100)
-        fdb.put('/'+username.user_id,'answer',answer)
+        fdb.put('/'+dataid,'start',1)
+        fdb.put('/'+dataid,'min',1)
+        fdb.put('/'+dataid,'max',100)
+        fdb.put('/'+dataid,'answer',answer)
         
-    elif fdb.get('/'+username.user_id,'start') == 1:
-        min = fdb.get('/'+username.user_id,'min')
-        max = fdb.get('/'+username.user_id,'max')
-        if int(event.message.text) == fdb.get('/'+username.user_id,'answer'):
+    elif fdb.get('/'+dataid,'start') == 1:
+        min = fdb.get('/'+dataid,'min')
+        max = fdb.get('/'+dataid,'max')
+        if int(event.message.text) == fdb.get('/'+dataid,'answer'):
             
             message = TextSendMessage(text= username.display_name + " 答對了！好厲害！")
             line_bot_api.reply_message(event.reply_token, message)
-            fdb.put('/'+username.user_id,'start',0)
-        elif int(event.message.text) > fdb.get('/'+username.user_id,'answer'):
-            fdb.put('/'+username.user_id,'max',int(event.message.text) )
+            fdb.put('/'+dataid'start',0)
+        elif int(event.message.text) > fdb.get('/'+dataid,'answer'):
+            fdb.put('/'+dataid,'max',int(event.message.text) )
             max = int(event.message.text) 
             message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
             line_bot_api.reply_message(event.reply_token, message)
         else:
-            fdb.put('/'+username.user_id,'min',int(event.message.text) )
+            fdb.put('/'+dataid,'min',int(event.message.text) )
             min = int(event.message.text) 
             message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
             line_bot_api.reply_message(event.reply_token, message)
@@ -72,7 +75,7 @@ def handle_message(event):
         username = line_bot_api.get_profile(UserName)
         message = TextSendMessage(text= username.display_name + username.user_id)
         line_bot_api.reply_message(event.reply_token, message)
-        fdb.put('/'+username.user_id,'test',event.message.text)
+        fdb.put('/'+dataid,'test',event.message.text)
 
 import os
 if __name__ == "__main__":
