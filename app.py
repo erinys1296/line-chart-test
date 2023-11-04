@@ -30,8 +30,8 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
-    
-
+    UserName = event.source.user_id
+    username = line_bot_api.get_profile(UserName)
     fdb.put('/'+username.user_id,'start',0)
     if event.message.text == '開始':
         answer = random.randint(1,100)
@@ -45,8 +45,11 @@ def handle_message(event):
             message = TextSendMessage(text= "答對了！好厲害！")
             line_bot_api.reply_message(event.reply_token, message)
             fdb.put('/'+username.user_id,'start',0)
+        elif int(event.message.text) > answer:
+            message = TextSendMessage(text= "太小了喔，再猜一次")
+            line_bot_api.reply_message(event.reply_token, message)
         else:
-            message = TextSendMessage(text= "再猜一次喔！")
+            message = TextSendMessage(text= "太大了喔，再猜一次")
             line_bot_api.reply_message(event.reply_token, message)
         
     else:
