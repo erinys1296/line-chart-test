@@ -32,7 +32,10 @@ def handle_message(event):
 
     UserName = event.source.user_id
     username = line_bot_api.get_profile(UserName)
-    fdb.put('/'+username.user_id,'start',0)
+    try: 
+        test = fdb.get('/'+username.user_id,'start')
+    except:
+        fdb.put('/'+username.user_id,'start',0)
     if event.message.text == '開始':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
