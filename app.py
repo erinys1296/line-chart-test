@@ -7,6 +7,7 @@ import os
 import openai
 from firebase import firebase
 url = 'https://line-notify-a56be-default-rtdb.firebaseio.com/'
+fdb = firebase.FirebaseApplication(url, None)    # 初始化，第二個參數作用在負責使用者登入資訊，通常設定為 None
 
 app = Flask(__name__)
 
@@ -62,8 +63,9 @@ def handle_message(event):
     else:
         UserName = event.source.user_id
         username = line_bot_api.get_profile(UserName)
-        message = TextSendMessage(text= username.display_name)
+        message = TextSendMessage(text= username.display_name + username.user_id)
         line_bot_api.reply_message(event.reply_token, message)
+        fdb.put('/'+username.user_id,'test',event.message.text)
 
 import os
 if __name__ == "__main__":
