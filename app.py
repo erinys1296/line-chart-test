@@ -43,7 +43,7 @@ def handle_message(event):
         fdb.put('/'+dataid,'start',0)
     if event.message.text == '開始':
         answer = random.randint(1,100)
-        message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
+        message = TextSendMessage(text="請從1到100中猜個數字 " )
         line_bot_api.reply_message(event.reply_token, message)
         counter = 0
         fdb.put('/'+dataid,'start',1)
