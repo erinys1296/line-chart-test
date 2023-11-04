@@ -58,7 +58,7 @@ def handle_message(event):
             
             message = TextSendMessage(text= username.display_name + " 答對了！好厲害！")
             line_bot_api.reply_message(event.reply_token, message)
-            fdb.put('/'+dataid'start',0)
+            fdb.put('/'+dataid,'start',0)
         elif int(event.message.text) > fdb.get('/'+dataid,'answer'):
             fdb.put('/'+dataid,'max',int(event.message.text) )
             max = int(event.message.text) 
