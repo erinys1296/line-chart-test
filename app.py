@@ -5,6 +5,8 @@ from linebot.models import *
 import random
 import os
 import openai
+from firebase import firebase
+url = 'https://line-notify-a56be-default-rtdb.firebaseio.com/'
 
 app = Flask(__name__)
 
