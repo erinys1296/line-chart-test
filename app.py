@@ -31,31 +31,39 @@ def callback():
 def handle_message(event):
 
     UserName = event.source.user_id
-    GroupID = line_bot_api.get_group_summary(event.source.group_id)
+    #GroupID = line_bot_api.get_group_summary(event.source.group_id)
     username = line_bot_api.get_profile(UserName)
     try: 
         test = fdb.get('/'+username.user_id,'start')
     except:
         fdb.put('/'+username.user_id,'start',0)
-        fdb.put('/'+GroupID,'start',0)
+        #fdb.put('/'+GroupID,'start',0)
     if event.message.text == '開始':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
         line_bot_api.reply_message(event.reply_token, message)
         counter = 0
         fdb.put('/'+username.user_id,'start',1)
+        fdb.put('/'+username.user_id,'min',1)
+        fdb.put('/'+username.user_id,'max',100)
         fdb.put('/'+username.user_id,'answer',answer)
         
     elif fdb.get('/'+username.user_id,'start') == 1:
+        min = fdb.get('/'+username.user_id,'min')
+        max = fdb.get('/'+username.user_id,'max')
         if int(event.message.text) == fdb.get('/'+username.user_id,'answer'):
             message = TextSendMessage(text= "答對了！好厲害！")
             line_bot_api.reply_message(event.reply_token, message)
             fdb.put('/'+username.user_id,'start',0)
         elif int(event.message.text) > fdb.get('/'+username.user_id,'answer'):
-            message = TextSendMessage(text= "太小了喔，再猜一次")
+            fdb.put('/'+username.user_id,'max',int(event.message.text) )
+            max = int(event.message.text) 
+            message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
             line_bot_api.reply_message(event.reply_token, message)
         else:
-            message = TextSendMessage(text= "太大了喔，再猜一次")
+            fdb.put('/'+username.user_id,'max',int(event.message.text) )
+            max = int(event.message.text) 
+            message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
             line_bot_api.reply_message(event.reply_token, message)
         
     else:
