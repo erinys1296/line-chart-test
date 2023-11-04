@@ -31,11 +31,13 @@ def callback():
 def handle_message(event):
 
     UserName = event.source.user_id
+    GroupID = line_bot_api.get_group_summary(event.source.group_id)
     username = line_bot_api.get_profile(UserName)
     try: 
         test = fdb.get('/'+username.user_id,'start')
     except:
         fdb.put('/'+username.user_id,'start',0)
+        fdb.put('/'+GroupID,'start',0)
     if event.message.text == '開始':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
@@ -49,7 +51,7 @@ def handle_message(event):
             message = TextSendMessage(text= "答對了！好厲害！")
             line_bot_api.reply_message(event.reply_token, message)
             fdb.put('/'+username.user_id,'start',0)
-        elif int(event.message.text) > afdb.get('/'+username.user_id,'answer'):
+        elif int(event.message.text) > fdb.get('/'+username.user_id,'answer'):
             message = TextSendMessage(text= "太小了喔，再猜一次")
             line_bot_api.reply_message(event.reply_token, message)
         else:
