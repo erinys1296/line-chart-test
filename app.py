@@ -32,33 +32,22 @@ def handle_message(event):
 
     
 
-    
+    fdb.put('/'+username.user_id,'start',0)
     if event.message.text == '開始':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " + str(answer))
         counter = 0
-        while True:
-            counter +=1 
-            message = TextSendMessage(text= str(counter))
+        fdb.put('/'+username.user_id,'start',0)
+        fdb.put('/'+username.user_id,'guess',answer)
+        
+    elif fdb.get('/'+username.user_id,'start') == 1:
+        if int(event.message.text) == answer:
+            message = TextSendMessage(text= "答對了！好厲害！")
             line_bot_api.reply_message(event.reply_token, message)
-            if counter > 5:
-                break
-
-        line_bot_api.reply_message(event.reply_token, message)
-    elif event.message.text[:6].lower() == 'hi ai:':
-        reply_msg = ''
-        openai.api_key = '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'
-
-        # 將第六個字元之後的訊息發送給 OpenAI
-        response = openai.Completion.create(
-            model='text-davinci-003',
-            prompt=event.message.text[6:],
-            max_tokens=256,
-            temperature=0.5,
-            )
-        # 接收到回覆訊息後，移除換行符號
-        reply_msg = response["choices"][0]["text"].replace('\n','')
-        line_bot_api.reply_message(event.reply_token, reply_msg)
+            fdb.put('/'+username.user_id,'start',0)
+        else:
+            message = TextSendMessage(text= "再猜一次喔！")
+            line_bot_api.reply_message(event.reply_token, message)
         
     else:
         UserName = event.source.user_id
