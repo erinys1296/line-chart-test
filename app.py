@@ -52,7 +52,8 @@ def handle_message(event):
         min = fdb.get('/'+username.user_id,'min')
         max = fdb.get('/'+username.user_id,'max')
         if int(event.message.text) == fdb.get('/'+username.user_id,'answer'):
-            message = TextSendMessage(text= "答對了！好厲害！")
+            
+            message = TextSendMessage(text= username.display_name + " 答對了！好厲害！")
             line_bot_api.reply_message(event.reply_token, message)
             fdb.put('/'+username.user_id,'start',0)
         elif int(event.message.text) > fdb.get('/'+username.user_id,'answer'):
@@ -61,8 +62,8 @@ def handle_message(event):
             message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
             line_bot_api.reply_message(event.reply_token, message)
         else:
-            fdb.put('/'+username.user_id,'max',int(event.message.text) )
-            max = int(event.message.text) 
+            fdb.put('/'+username.user_id,'min',int(event.message.text) )
+            min = int(event.message.text) 
             message = TextSendMessage(text= "請從{}到{}中猜個數字".format(min,max) )
             line_bot_api.reply_message(event.reply_token, message)
         
