@@ -53,6 +53,20 @@ def handle_message(event):
         fdb.put('/'+dataid,'min',1)
         fdb.put('/'+dataid,'max',100)
         fdb.put('/'+dataid,'answer',answer)
+    if event.message.text == '開始猜音':
+        answer = random.randint(1,100)
+        message = TextSendMessage(text="先給一個A" )
+        line_bot_api.reply_message(event.reply_token, message)
+        body = {
+        'to':username.user_id,
+        'messages':[{
+                "type": "audio",
+                "originalContentUrl": "https://drive.google.com/file/d/1VeB6Zz0dpz56fbvctLG9C6qBv6x_N7tc/view?usp=sharing",
+                "duration": 60000
+            }]
+        }
+        req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
+       
         
     elif fdb.get('/'+dataid,'start') == 1:
         min = fdb.get('/'+dataid,'min')
@@ -92,6 +106,7 @@ def handle_message(event):
         'messages':[{
                 'type': 'text',
                 'text': 'hello '+username.display_name
+                
             }]
         }
         req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
