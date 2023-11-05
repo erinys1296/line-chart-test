@@ -6,9 +6,12 @@ import random
 import os
 import openai
 from firebase import firebase
+
+import requests, json
+
 url = 'https://line-notify-a56be-default-rtdb.firebaseio.com/'
 fdb = firebase.FirebaseApplication(url, None)    # 初始化，第二個參數作用在負責使用者登入資訊，通常設定為 None
-
+headers = {'Authorization':'Bearer '+os.environ['CHANNEL_ACCESS_TOKEN'],'Content-Type':'application/json'}
 app = Flask(__name__)
 
 
@@ -84,9 +87,22 @@ def handle_message(event):
     else:
         UserName = event.source.user_id
         username = line_bot_api.get_profile(UserName)
-        message = TextSendMessage(text= username.display_name + username.user_id)
-        line_bot_api.reply_message(event.reply_token, message)
-        fdb.put('/'+dataid,'test',event.message.text)
+        body = {
+        'to':username.user_id,
+        'messages':[{
+                'type': 'text',
+                'text': 'hello '+username.display_name
+            }]
+        }
+        req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
+       
+        #message = TextSendMessage(text= username.display_name + username.user_id)
+        #向指定網址發送request
+        #req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
+        # 印出得到的結果
+        
+        #line_bot_api.reply_message(event.reply_token, message)
+        #fdb.put('/'+dataid,'test',event.message.text)
 
 import os
 if __name__ == "__main__":
