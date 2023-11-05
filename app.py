@@ -61,8 +61,8 @@ def handle_message(event):
         'to':username.user_id,
         'messages':[{
                 "type": "audio",
-                "originalContentUrl": "https://drive.google.com/file/d/1VeB6Zz0dpz56fbvctLG9C6qBv6x_N7tc/view?usp=sharing",
-                "duration": 60000
+                "originalContentUrl": "https://drive.google.com/file/d/1FAWkQr3vWS-JIy_qh-M2rqABF0A9rBqO/view?usp=sharing",
+                "duration": 2000
             }]
         }
         req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
