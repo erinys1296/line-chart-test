@@ -134,7 +134,7 @@ def handle_message(event):
         except:
             message = TextSendMessage(text= "還在猜數字中喔！請猜中或輸入「結束」來跳出" )
             line_bot_api.reply_message(event.reply_token, message)
-    elif fdb.get('/'+dataid,'audiostart') == 1:
+    elif fdb.get('/'+dataid,'startaudio') == 1:
         if event.message.text == "結束":  
             message = TextSendMessage(text= "遊戲已終止，想再玩一次請輸入「開始猜音」" )
             line_bot_api.reply_message(event.reply_token, message)
