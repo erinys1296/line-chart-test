@@ -18,7 +18,11 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 audiogame = {'B':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/B.m4a?alt=media&token=d2d1fb7e-43b2-4349-bab7-925245ff301b&_gl=1*1knynyj*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI2Njg4OC40LjEuMTY5OTI2NzgyOS40NC4wLjA.',
-            'C':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/C.m4a?alt=media&token=b40c4926-b1c9-45f4-9dd0-24e05303e736&_gl=1*welz0v*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI2Njg4OC40LjEuMTY5OTI2Nzg2Ny42LjAuMA..'}
+            'C':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/C.m4a?alt=media&token=b40c4926-b1c9-45f4-9dd0-24e05303e736&_gl=1*welz0v*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI2Njg4OC40LjEuMTY5OTI2Nzg2Ny42LjAuMA..',
+            'D':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/D.m4a?alt=media&token=370831c8-8217-4f34-845e-7b81d680d5c0&_gl=1*1lmu51g*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI3Nzk3MC41LjEuMTY5OTI3Nzk3MS41OS4wLjA.',
+            'E':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/E.m4a?alt=media&token=4d883570-f011-498a-be70-0ffdbb54cff4&_gl=1*wlzbd0*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI3Nzk3MC41LjEuMTY5OTI3ODAyOS4xLjAuMA..',
+            'F':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/F.m4a?alt=media&token=fa3225aa-c1af-4c76-8245-74656f178817&_gl=1*1mqwmzc*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI3Nzk3MC41LjEuMTY5OTI3ODA4OS44LjAuMA..',
+            'G':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/G.m4a?alt=media&token=cf0c7a78-e611-49a0-ae4a-7b2a9fbe9d6e&_gl=1*k9s81d*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI3Nzk3MC41LjEuMTY5OTI3ODEwNC41OS4wLjA.'}
 
 
 @app.route("/callback", methods=['POST'])
@@ -63,8 +67,10 @@ def handle_message(event):
         fdb.put('/'+dataid,'count',0)
         fdb.put('/'+dataid,'answer',answer)
     elif event.message.text == '開始猜音':
-        answers = ['B','C']#,'D','E','F','G']
+        answers = ['B','C','D','E','F','G']
         answer = answers[random.randint(0,1)]
+        fdb.put('/'+dataid,'startaudio',1)
+        fdb.put('/'+dataid,'audioanswer',answer)
         message = TextSendMessage(text="先給一個A" )
         line_bot_api.reply_message(event.reply_token, message)
         body = {
@@ -128,7 +134,19 @@ def handle_message(event):
         except:
             message = TextSendMessage(text= "還在猜數字中喔！請猜中或輸入「結束」來跳出" )
             line_bot_api.reply_message(event.reply_token, message)
-        
+    elif fdb.get('/'+dataid,'audiostart') == 1:
+        if event.message.text == "結束":  
+            message = TextSendMessage(text= "遊戲已終止，想再玩一次請輸入「開始猜音」" )
+            line_bot_api.reply_message(event.reply_token, message)
+            fdb.put('/'+dataid,'start',0)
+        elif event.message.text == fdb.get('/'+dataid,'audioanswer'):
+            message = TextSendMessage(text= "答對了！好厲害！" )
+            line_bot_api.reply_message(event.reply_token, message)
+        else:
+            message = TextSendMessage(text= "不對喔！再猜一次～" )
+            line_bot_api.reply_message(event.reply_token, message)
+            
+            
     else:
         UserName = event.source.user_id
         username = line_bot_api.get_profile(UserName)
