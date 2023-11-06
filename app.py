@@ -17,6 +17,8 @@ app = Flask(__name__)
 
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
+audiogame = {'B':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/B.m4a?alt=media&token=d2d1fb7e-43b2-4349-bab7-925245ff301b&_gl=1*1knynyj*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI2Njg4OC40LjEuMTY5OTI2NzgyOS40NC4wLjA.',
+            'C':'https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/C.m4a?alt=media&token=b40c4926-b1c9-45f4-9dd0-24e05303e736&_gl=1*welz0v*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI2Njg4OC40LjEuMTY5OTI2Nzg2Ny42LjAuMA..'}
 
 
 @app.route("/callback", methods=['POST'])
@@ -44,6 +46,12 @@ def handle_message(event):
         test = fdb.get('/'+dataid,'start')
     except:
         fdb.put('/'+dataid,'start',0)
+        
+    try: 
+        test = fdb.get('/'+dataid,'startaudio')
+    except:
+        fdb.put('/'+dataid,'startaudio',0)
+        
     if event.message.text == '開始猜數字':
         answer = random.randint(1,100)
         message = TextSendMessage(text="請從1到100中猜個數字 " )
@@ -54,8 +62,9 @@ def handle_message(event):
         fdb.put('/'+dataid,'max',100)
         fdb.put('/'+dataid,'count',0)
         fdb.put('/'+dataid,'answer',answer)
-    if event.message.text == '開始猜音':
-        answer = random.randint(1,100)
+    elif event.message.text == '開始猜音':
+        answers = ['B','C']#,'D','E','F','G']
+        answer = answerts[random.randint(0,1)]
         message = TextSendMessage(text="先給一個A" )
         line_bot_api.reply_message(event.reply_token, message)
         body = {
@@ -63,6 +72,18 @@ def handle_message(event):
         'messages':[{
                 "type": "audio",
                 "originalContentUrl": "https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/A.m4a?alt=media&token=ef2f2ff9-cd1c-48d7-a7f2-7e6746263844&_gl=1*l97xkq*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI2Njg4OC40LjEuMTY5OTI2NzA4Ny4xMC4wLjA.",
+                "duration": 2000
+            }]
+        }
+        req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
+
+        message = TextSendMessage(text="猜猜這是什麼音" )
+        line_bot_api.reply_message(event.reply_token, message)
+        body = {
+        'to':username.user_id,
+        'messages':[{
+                "type": "audio",
+                "originalContentUrl": audiogame[answer],
                 "duration": 2000
             }]
         }
