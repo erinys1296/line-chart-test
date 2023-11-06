@@ -138,10 +138,11 @@ def handle_message(event):
         if event.message.text == "結束":  
             message = TextSendMessage(text= "遊戲已終止，想再玩一次請輸入「開始猜音」" )
             line_bot_api.reply_message(event.reply_token, message)
-            fdb.put('/'+dataid,'start',0)
+            fdb.put('/'+dataid,'startaudio',0)
         elif event.message.text == fdb.get('/'+dataid,'audioanswer'):
             message = TextSendMessage(text= "答對了！好厲害！" )
             line_bot_api.reply_message(event.reply_token, message)
+            fdb.put('/'+dataid,'startaudio',0)
         else:
             message = TextSendMessage(text= "不對喔！再猜一次～" )
             line_bot_api.reply_message(event.reply_token, message)
