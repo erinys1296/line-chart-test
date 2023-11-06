@@ -52,6 +52,7 @@ def handle_message(event):
         fdb.put('/'+dataid,'start',1)
         fdb.put('/'+dataid,'min',1)
         fdb.put('/'+dataid,'max',100)
+        fdb.put('/'+dataid,'count',0)
         fdb.put('/'+dataid,'answer',answer)
     if event.message.text == '開始猜音':
         answer = random.randint(1,100)
@@ -69,6 +70,8 @@ def handle_message(event):
        
         
     elif fdb.get('/'+dataid,'start') == 1:
+        count = fdb.get('/'+dataid,'count') + 1
+        fdb.put('/'+dataid,'count',count)
         min = fdb.get('/'+dataid,'min')
         max = fdb.get('/'+dataid,'max')
         if event.message.text == "結束":
@@ -77,7 +80,7 @@ def handle_message(event):
             fdb.put('/'+dataid,'start',0)
         try:
             if int(event.message.text) == fdb.get('/'+dataid,'answer'):
-                message = TextSendMessage(text= username.display_name + " 答對了！好厲害！")
+                message = TextSendMessage(text= username.display_name + " 答對了！共花了{}次".format(count))
                 line_bot_api.reply_message(event.reply_token, message)
                 fdb.put('/'+dataid,'start',0)
             elif not min < int(event.message.text) < max:
