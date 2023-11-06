@@ -68,7 +68,7 @@ def handle_message(event):
         fdb.put('/'+dataid,'answer',answer)
     elif event.message.text == '開始猜音':
         answers = ['B','C','D','E','F','G']
-        answer = answers[random.randint(0,1)]
+        answer = answers[random.randint(0,5)]
         fdb.put('/'+dataid,'startaudio',1)
         fdb.put('/'+dataid,'audioanswer',answer)
         message = TextSendMessage(text="先給一個A" )
