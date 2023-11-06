@@ -62,7 +62,7 @@ def handle_message(event):
         'to':username.user_id,
         'messages':[{
                 "type": "audio",
-                "originalContentUrl": "https://drive.google.com/file/d/1FAWkQr3vWS-JIy_qh-M2rqABF0A9rBqO/view?usp=sharing",
+                "originalContentUrl": "https://firebasestorage.googleapis.com/v0/b/line-notify-a56be.appspot.com/o/A.m4a?alt=media&token=ef2f2ff9-cd1c-48d7-a7f2-7e6746263844&_gl=1*l97xkq*_ga*NjEwMjI3NzkzLjE2OTkwNjM3NDU.*_ga_CW55HF8NVT*MTY5OTI2Njg4OC40LjEuMTY5OTI2NzA4Ny4xMC4wLjA.",
                 "duration": 2000
             }]
         }
