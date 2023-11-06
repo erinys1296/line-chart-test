@@ -77,8 +77,15 @@ def handle_message(event):
         }
         req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
 
-        message = TextSendMessage(text="猜猜這是什麼音" )
-        line_bot_api.reply_message(event.reply_token, message)
+        body = {
+        'to':username.user_id,
+        'messages':[{
+                "type": "text",
+                "text":"猜猜這是什麼音"
+            }]
+        }
+        req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
+       
         body = {
         'to':username.user_id,
         'messages':[{
