@@ -64,7 +64,7 @@ def handle_message(event):
         fdb.put('/'+dataid,'answer',answer)
     elif event.message.text == '開始猜音':
         answers = ['B','C']#,'D','E','F','G']
-        answer = answerts[random.randint(0,1)]
+        answer = answers[random.randint(0,1)]
         message = TextSendMessage(text="先給一個A" )
         line_bot_api.reply_message(event.reply_token, message)
         body = {
