@@ -57,7 +57,7 @@ def handle_message(event):
         fdb.put('/'+dataid,'startaudio',0)
         
     if event.message.text == '開始猜數字':
-        answer = random.randint(1,100)
+        answer = random.randint(2,99)
         message = TextSendMessage(text="請從1到100中猜個數字 " )
         line_bot_api.reply_message(event.reply_token, message)
         counter = 0
@@ -159,7 +159,10 @@ def handle_message(event):
                 
             }]
         }
-        req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
+        message = TextSendMessage(text= 'hello '+username.display_name )
+        line_bot_api.reply_message(event.reply_token, message)
+
+        # req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
        
         #message = TextSendMessage(text= username.display_name + username.user_id)
         #向指定網址發送request
